@@ -3,7 +3,8 @@ package reservation.quandoo.com.quandooreservation.di;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import reservation.quandoo.com.quandooreservation.presentation.MainActivity;
+import reservation.quandoo.com.quandooreservation.presentation.view.MainActivity;
+import reservation.quandoo.com.quandooreservation.presentation.view.TableActivity;
 
 /**
  * Dagger application component defining injection points
@@ -18,6 +19,8 @@ public interface ApplicationComponent {
 
 
     void inject(MainActivity activity);
+
+    void inject(TableActivity activity);
 
 
 
