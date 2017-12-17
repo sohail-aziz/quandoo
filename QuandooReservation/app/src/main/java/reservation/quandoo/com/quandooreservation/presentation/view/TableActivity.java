@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -25,14 +27,21 @@ import reservation.quandoo.com.quandooreservation.presentation.presenter.TablePr
 public class TableActivity extends AppCompatActivity implements TablePresenter.TablesView{
 
     public static final String KEY_CUSTOMER_EXTRA = "TableActivity.customer_extra";
+    private static final String TAG = "TableActivity";
+
     @Bind(R.id.progress_loading)
     ProgressBar progressBarLoading;
 
     @Bind(R.id.recycler_view_tables)
     RecyclerView recyclerViewTables;
 
+    @Bind(R.id.text_view_customer_name)
+    TextView textViewCustomerName;
+
     @Inject
     TablePresenter presenter;
+
+    private TableAdapter adapter;
 
     public static Intent getCallingIntent(Context context, Customer customer) {
         Intent intent= new Intent(context, TableActivity.class);
@@ -44,11 +53,27 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table);
         ButterKnife.bind(this);
+        initView();
         injectDependencies();
 
-        presenter.setView(this);
 
+        presenter.setView(this);
         loadTables();
+    }
+
+    private void initView() {
+       Intent intent= getIntent();
+        if (intent.hasExtra(KEY_CUSTOMER_EXTRA)) {
+            Customer customer = intent.getParcelableExtra(KEY_CUSTOMER_EXTRA);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Select Table for:")
+                    .append("\n")
+                    .append(customer.firstName())
+                    .append(" ")
+                    .append(customer.lastName());
+
+            textViewCustomerName.setText(stringBuilder.toString());
+        }
     }
 
     private void loadTables() {
@@ -74,13 +99,22 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
     }
 
     @Override
-    public void onTableDataLoaded(List<Boolean> tablesStates) {
+    public void onTableDataLoaded( List<Boolean> tablesStates) {
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
-        TableAdapter adapter = new TableAdapter(this, tablesStates);
+        adapter = new TableAdapter(this, new TableAdapter.OnTableClickListener() {
+            @Override
+            public void onTableClick(int tableNo) {
+                //tablesStates.get(tableNo) = false;
+                presenter.bookTable(tableNo,null);
+
+            }
+        });
 
         recyclerViewTables.setLayoutManager(gridLayoutManager);
         recyclerViewTables.setAdapter(adapter);
+
+        adapter.updateAllTable(tablesStates);
 
 
 
@@ -90,5 +124,19 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
     public void onTableDataError(String errorMessage) {
 
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTableBooked(int tableNo) {
+        Log.d(TAG, "onTableBooked: tableNo=" + tableNo);
+        adapter.updateTable(tableNo,false);
+        ++tableNo;
+        Toast.makeText(this, "Table No "+tableNo+" booked successfullly", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onTableBookError(String errorMessage) {
+
     }
 }

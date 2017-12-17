@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content">
 
-    <CheckBox
-        android:id="@+id/cb_table_name"
+    <Button
+        android:id="@+id/button_table_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="1"

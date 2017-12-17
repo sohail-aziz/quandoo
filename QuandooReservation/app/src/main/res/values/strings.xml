@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Quandoo Reservation</string>
+    <string name="customer_activity_title">Customer List</string>
+    <string name="table_activity_title">Book Table</string>
 </resources>

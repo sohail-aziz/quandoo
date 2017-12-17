@@ -12,14 +12,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presentation.view.MainActivity">
+        <activity android:name=".presentation.view.MainActivity"
+            android:label="@string/customer_activity_title"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.view.TableActivity"></activity>
+        <activity android:name=".presentation.view.TableActivity"
+            android:label="@string/table_activity_title"
+            ></activity>
     </application>
 
 </manifest>

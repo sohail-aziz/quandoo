@@ -5,10 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -22,13 +24,30 @@ import reservation.quandoo.com.quandooreservation.data.response.Customer;
 
 public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerViewHolder> {
 
-    private Context context;
-    private List<Boolean> tablesStates;
+    public interface OnTableClickListener{
+        void onTableClick(int tableNo);
+    }
 
-    public TableAdapter(Context context, List<Boolean> tablesStates) {
+    private Context context;
+    private List<Boolean> tablesStates = new ArrayList<>();
+    private OnTableClickListener tableClickListener;
+
+
+    public TableAdapter(Context context, OnTableClickListener tableClickListener) {
 
         this.context=context;
-        this.tablesStates=tablesStates;
+        this.tableClickListener = tableClickListener;
+    }
+
+    public void updateAllTable(List<Boolean> tablesStates) {
+        this.tablesStates.clear();
+        this.tablesStates.addAll(tablesStates);
+        notifyDataSetChanged();
+    }
+
+    public void updateTable(int position, Boolean isAvailable) {
+        this.tablesStates.set(position, isAvailable);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -39,17 +58,22 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
     }
 
     @Override
-    public void onBindViewHolder(CustomerViewHolder holder, int position) {
+    public void onBindViewHolder(CustomerViewHolder holder, final int position) {
 
-        holder.checkBoxTable.setText(String.valueOf(position+1));
-        holder.checkBoxTable.setChecked(tablesStates.get(position));
+        holder.buttonTableName.setText(String.valueOf(position+1));
+        if (tablesStates.get(position)) {
+            holder.buttonTableName.setEnabled(true);
+        } else {
+            holder.buttonTableName.setEnabled(false);
+        }
 
-        holder.checkBoxTable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.buttonTableName.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                //TODO callback table state change
+            public void onClick(View view) {
+                tableClickListener.onTableClick(position);
             }
         });
+
 
     }
 
@@ -61,11 +85,13 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
 
     static class CustomerViewHolder extends RecyclerView.ViewHolder{
 
-        @Bind(R.id.cb_table_name)
-        CheckBox checkBoxTable;
+        @Bind(R.id.button_table_name)
+        Button buttonTableName;
         public CustomerViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
         }
+
+
     }
 }

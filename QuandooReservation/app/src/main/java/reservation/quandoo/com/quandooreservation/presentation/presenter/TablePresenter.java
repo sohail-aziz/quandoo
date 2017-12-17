@@ -23,8 +23,11 @@ public class TablePresenter {
     public interface TablesView extends BaseView {
 
         void onTableDataLoaded(List<Boolean> tablesStates);
-
         void onTableDataError(String errorMessage);
+
+        void onTableBooked(int tableNo);
+
+        void onTableBookError(String errorMessage);
     }
 
     private final Repository repository;
@@ -70,6 +73,12 @@ public class TablePresenter {
                         view.onTableDataLoaded(tables);
                     }
                 });
+    }
+
+    public void bookTable(int tableNo, Customer customer) {
+        //TODO book this table and notify to activity
+
+        view.onTableBooked(tableNo);
 
     }
 
