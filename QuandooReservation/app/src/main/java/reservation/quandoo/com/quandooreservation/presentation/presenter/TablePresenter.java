@@ -4,14 +4,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import reservation.quandoo.com.quandooreservation.data.Repository;
-import reservation.quandoo.com.quandooreservation.data.response.Customer;
+import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.presentation.view.BaseView;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
 
 /**
  * Table Presenter in MVP
@@ -23,6 +25,7 @@ public class TablePresenter {
     public interface TablesView extends BaseView {
 
         void onTableDataLoaded(List<Boolean> tablesStates);
+
         void onTableDataError(String errorMessage);
 
         void onTableBooked(int tableNo);
@@ -32,7 +35,6 @@ public class TablePresenter {
 
     private final Repository repository;
     private TablesView view;
-    private Subscription subscription;
 
 
     @Inject
@@ -41,7 +43,7 @@ public class TablePresenter {
     }
 
     public void setView(TablesView view) {
-        this.view=view;
+        this.view = view;
     }
 
     public void getTablesData() {
@@ -52,14 +54,22 @@ public class TablePresenter {
 
         showProgress();
 
-        Observable<List<Boolean>> observable= repository.getTables();
-        subscription = observable.subscribeOn(Schedulers.io())
+        Observable<List<Boolean>> observable = repository.getTables();
+        observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Boolean>>() {
+
                     @Override
-                    public void onCompleted() {
-                        hideProgress();
+                    public void onSubscribe(@NonNull Disposable d) {
+
                     }
+
+                    @Override
+                    public void onComplete() {
+                        hideProgress();
+
+                    }
+
 
                     @Override
                     public void onError(Throwable e) {

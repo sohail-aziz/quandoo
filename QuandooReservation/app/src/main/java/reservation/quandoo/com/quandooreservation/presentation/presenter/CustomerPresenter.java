@@ -2,19 +2,26 @@ package reservation.quandoo.com.quandooreservation.presentation.presenter;
 
 import android.util.Log;
 
+import org.reactivestreams.Subscription;
+
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import reservation.quandoo.com.quandooreservation.data.Repository;
-import reservation.quandoo.com.quandooreservation.data.response.Customer;
+import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.presentation.view.BaseView;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
 
 /**
  *  Presenter in MVP
@@ -36,7 +43,7 @@ public class CustomerPresenter {
     private  CustomerView view;
     private final Repository repository;
 
-    private Subscription subscription;
+    private CompositeDisposable  compositeDisposable;
 
 
     @Inject
@@ -51,9 +58,7 @@ public class CustomerPresenter {
 
     public void onDestroy() {
 
-        if (subscription != null && !subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
-        }
+
     }
     public void getCustomers() {
 
@@ -65,32 +70,56 @@ public class CustomerPresenter {
 
         Observable<List<Customer>> observable=repository.getCustomers();
 
-        subscription=observable
+
+
+       observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Customer>>() {
                     @Override
-                    public void onCompleted() {
+                    public void onSubscribe(@NonNull Disposable d) {
 
-                        hideProgress();
+                        Log.d(TAG, "onSubscribe()");
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onComplete() {
+
+                        Log.d(TAG, "onComplete");
                         hideProgress();
-                        view.onCustomersError(e.getMessage());
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError");
+                        hideProgress();
+
+                        if (e instanceof IOException) {
+                            view.onCustomersError("Internet not working");
+
+                        } else {
+                            view.onCustomersError(e.getMessage());
+
+                        }
+
 
                     }
 
                     @Override
                     public void onNext(List<Customer> customers) {
+                        Log.d(TAG, "onNext customer size=" + customers.size());
 
-                        Log.d(TAG, "customers=" + customers);
+
                         view.onCustomersLoaded(customers);
 
                     }
-                })
-                ;
+                });
+
+
+
+
+
+
     }
 
     private void showProgress() {

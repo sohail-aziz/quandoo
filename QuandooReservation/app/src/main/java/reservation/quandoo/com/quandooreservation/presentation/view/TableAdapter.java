@@ -16,7 +16,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import reservation.quandoo.com.quandooreservation.R;
-import reservation.quandoo.com.quandooreservation.data.response.Customer;
 
 /**
  * Created by sohailaziz on 16/12/17.

@@ -16,13 +16,14 @@ public class QuandooApplication extends Application {
 
     private static ApplicationComponent mComponent;
 
+
     @Override
     public void onCreate() {
         super.onCreate();
         initComponent(this);
     }
 
-    public  ApplicationComponent getComponent() {
+    public ApplicationComponent getComponent() {
         return mComponent;
     }
 
@@ -32,4 +33,6 @@ public class QuandooApplication extends Application {
                 .applicationModule(new ApplicationModule(context))
                 .build();
     }
+
+
 }

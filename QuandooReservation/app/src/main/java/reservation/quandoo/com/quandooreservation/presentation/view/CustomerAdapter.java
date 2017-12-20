@@ -1,7 +1,6 @@
 package reservation.quandoo.com.quandooreservation.presentation.view;
 
 import android.content.Context;
-import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -13,13 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import reservation.quandoo.com.quandooreservation.R;
-import reservation.quandoo.com.quandooreservation.data.response.Customer;
+import reservation.quandoo.com.quandooreservation.data.local.Customer;
 
 /**
  * Created by sohailaziz on 16/12/17.
@@ -156,7 +154,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         public void bind(final Customer customer, final OnCustomerClickListener customerClickListener) {
 
-            textViewName.setText(customer.firstName() + " " + customer.lastName());
+            textViewName.setText(customer.getCustomerFirstName() + " " + customer.getCustomerLastName());
             textViewName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -184,7 +182,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             List<Customer> filteredCustomerList = new ArrayList<>();
             for (Customer c : filteredCustomers) {
-                if (c.firstName().toLowerCase().contains(charSequence) || c.lastName().toLowerCase().contains(charSequence)) {
+                if (c.getCustomerFirstName().toLowerCase().contains(charSequence) || c.getCustomerLastName().toLowerCase().contains(charSequence)) {
                     filteredCustomerList.add(c);
                 }
             }

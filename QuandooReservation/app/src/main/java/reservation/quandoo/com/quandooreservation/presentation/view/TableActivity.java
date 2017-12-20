@@ -2,9 +2,8 @@ package reservation.quandoo.com.quandooreservation.presentation.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.BinderThread;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,7 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import reservation.quandoo.com.quandooreservation.QuandooApplication;
 import reservation.quandoo.com.quandooreservation.R;
-import reservation.quandoo.com.quandooreservation.data.response.Customer;
+import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.presentation.presenter.TablePresenter;
 
 public class TableActivity extends AppCompatActivity implements TablePresenter.TablesView{
@@ -45,7 +44,7 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
 
     public static Intent getCallingIntent(Context context, Customer customer) {
         Intent intent= new Intent(context, TableActivity.class);
-        intent.putExtra(KEY_CUSTOMER_EXTRA, customer);
+        //intent.putExtra(KEY_CUSTOMER_EXTRA, customer);
         return intent;
     }
     @Override
@@ -68,9 +67,9 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Select Table for:")
                     .append("\n")
-                    .append(customer.firstName())
+                    .append(customer.getCustomerFirstName())
                     .append(" ")
-                    .append(customer.lastName());
+                    .append(customer.getCustomerLastName());
 
             textViewCustomerName.setText(stringBuilder.toString());
         }

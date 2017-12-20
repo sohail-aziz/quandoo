@@ -1,6 +1,5 @@
 package reservation.quandoo.com.quandooreservation.presentation.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,7 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import reservation.quandoo.com.quandooreservation.QuandooApplication;
 import reservation.quandoo.com.quandooreservation.R;
-import reservation.quandoo.com.quandooreservation.data.response.Customer;
+import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.presentation.presenter.CustomerPresenter;
 
 public class MainActivity extends AppCompatActivity implements CustomerPresenter.CustomerView{
@@ -82,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements CustomerPresenter
             @Override
             public void onCustomerClicked(Customer customer) {
 
-                Intent tableActivity = TableActivity.getCallingIntent(MainActivity.this, customer);
-                startActivity(tableActivity);
+//                Intent tableActivity = TableActivity.getCallingIntent(MainActivity.this, customer);
+//                startActivity(tableActivity);
 
             }
         });
