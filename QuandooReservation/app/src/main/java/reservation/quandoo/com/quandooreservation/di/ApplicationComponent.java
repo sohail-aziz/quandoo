@@ -22,6 +22,4 @@ public interface ApplicationComponent {
 
     void inject(TableActivity activity);
 
-
-
 }

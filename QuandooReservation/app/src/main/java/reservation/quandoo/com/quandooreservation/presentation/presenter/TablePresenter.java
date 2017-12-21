@@ -1,5 +1,7 @@
 package reservation.quandoo.com.quandooreservation.presentation.presenter;
 
+import android.util.Log;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,10 +10,12 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import reservation.quandoo.com.quandooreservation.data.Repository;
 import reservation.quandoo.com.quandooreservation.data.local.Customer;
+import reservation.quandoo.com.quandooreservation.data.local.Table;
 import reservation.quandoo.com.quandooreservation.presentation.view.BaseView;
 
 
@@ -24,7 +28,7 @@ public class TablePresenter {
 
     public interface TablesView extends BaseView {
 
-        void onTableDataLoaded(List<Boolean> tablesStates);
+        void onTableDataLoaded(List<Table> tablesStates);
 
         void onTableDataError(String errorMessage);
 
@@ -33,8 +37,10 @@ public class TablePresenter {
         void onTableBookError(String errorMessage);
     }
 
+    public static final String TAG = "TablePresenter";
     private final Repository repository;
     private TablesView view;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
     @Inject
@@ -54,32 +60,35 @@ public class TablePresenter {
 
         showProgress();
 
-        Observable<List<Boolean>> observable = repository.getTables();
+        Observable<List<Table>> observable = repository.getTables();
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Boolean>>() {
-
+                .subscribe(new Observer<List<Table>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-
+                        Log.d(TAG, "onSubscribe");
+                       compositeDisposable.add(d);
                     }
 
                     @Override
                     public void onComplete() {
+                        Log.d(TAG, "onComplete");
                         hideProgress();
 
                     }
 
-
                     @Override
                     public void onError(Throwable e) {
+                        Log.d(TAG, "onError");
                         hideProgress();
                         view.onTableDataError(e.getMessage());
 
                     }
 
                     @Override
-                    public void onNext(List<Boolean> tables) {
+                    public void onNext(List<Table> tables) {
+                        Log.d(TAG, "onNext: tables size=" + tables.size());
+
                         view.onTableDataLoaded(tables);
                     }
                 });
@@ -90,6 +99,12 @@ public class TablePresenter {
 
         view.onTableBooked(tableNo);
 
+    }
+
+    public void onDestroy() {
+        if (compositeDisposable != null) {
+            compositeDisposable.clear();
+        }
     }
 
     private void hideProgress() {

@@ -2,13 +2,15 @@ package reservation.quandoo.com.quandooreservation.data.local;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by sohailaziz on 19/12/17.
  */
 
-@Entity
-public class Customer {
+@Entity (tableName = "customer")
+public class Customer implements Parcelable {
 
     private String customerFirstName;
     private String customerLastName;
@@ -54,4 +56,35 @@ public class Customer {
     public void setId(int id) {
         this.id = id;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.customerFirstName);
+        dest.writeString(this.customerLastName);
+        dest.writeInt(this.id);
+    }
+
+    protected Customer(Parcel in) {
+        this.customerFirstName = in.readString();
+        this.customerLastName = in.readString();
+        this.id = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Customer> CREATOR = new Parcelable.Creator<Customer>() {
+        @Override
+        public Customer createFromParcel(Parcel source) {
+            return new Customer(source);
+        }
+
+        @Override
+        public Customer[] newArray(int size) {
+            return new Customer[size];
+        }
+    };
 }

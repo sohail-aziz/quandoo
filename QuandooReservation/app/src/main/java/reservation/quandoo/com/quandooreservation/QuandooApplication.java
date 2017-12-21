@@ -14,7 +14,7 @@ import reservation.quandoo.com.quandooreservation.di.DaggerApplicationComponent;
 
 public class QuandooApplication extends Application {
 
-    private static ApplicationComponent mComponent;
+    private  ApplicationComponent mComponent;
 
 
     @Override
@@ -27,7 +27,7 @@ public class QuandooApplication extends Application {
         return mComponent;
     }
 
-    private static void initComponent(Context context) {
+    private  void initComponent(Context context) {
         mComponent = DaggerApplicationComponent
                 .builder()
                 .applicationModule(new ApplicationModule(context))

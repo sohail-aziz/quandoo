@@ -21,9 +21,10 @@ import butterknife.ButterKnife;
 import reservation.quandoo.com.quandooreservation.QuandooApplication;
 import reservation.quandoo.com.quandooreservation.R;
 import reservation.quandoo.com.quandooreservation.data.local.Customer;
+import reservation.quandoo.com.quandooreservation.data.local.Table;
 import reservation.quandoo.com.quandooreservation.presentation.presenter.TablePresenter;
 
-public class TableActivity extends AppCompatActivity implements TablePresenter.TablesView{
+public class TableActivity extends AppCompatActivity implements TablePresenter.TablesView {
 
     public static final String KEY_CUSTOMER_EXTRA = "TableActivity.customer_extra";
     private static final String TAG = "TableActivity";
@@ -43,25 +44,25 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
     private TableAdapter adapter;
 
     public static Intent getCallingIntent(Context context, Customer customer) {
-        Intent intent= new Intent(context, TableActivity.class);
-        //intent.putExtra(KEY_CUSTOMER_EXTRA, customer);
+        Intent intent = new Intent(context, TableActivity.class);
+        intent.putExtra(KEY_CUSTOMER_EXTRA, customer);
         return intent;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table);
         ButterKnife.bind(this);
         initView();
+
         injectDependencies();
-
-
         presenter.setView(this);
         loadTables();
     }
 
     private void initView() {
-       Intent intent= getIntent();
+        Intent intent = getIntent();
         if (intent.hasExtra(KEY_CUSTOMER_EXTRA)) {
             Customer customer = intent.getParcelableExtra(KEY_CUSTOMER_EXTRA);
             StringBuilder stringBuilder = new StringBuilder();
@@ -82,7 +83,7 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
     }
 
     private void injectDependencies() {
-        ((QuandooApplication)getApplication()).getComponent().inject(this);
+        ((QuandooApplication) getApplication()).getComponent().inject(this);
     }
 
 
@@ -97,15 +98,21 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
 
     }
 
+
     @Override
-    public void onTableDataLoaded( List<Boolean> tablesStates) {
+    protected void onDestroy() {
+        presenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onTableDataLoaded(List<Table> tablesStates) {
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         adapter = new TableAdapter(this, new TableAdapter.OnTableClickListener() {
             @Override
             public void onTableClick(int tableNo) {
-                //tablesStates.get(tableNo) = false;
-                presenter.bookTable(tableNo,null);
+                presenter.bookTable(tableNo, null);
 
             }
         });
@@ -114,7 +121,6 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
         recyclerViewTables.setAdapter(adapter);
 
         adapter.updateAllTable(tablesStates);
-
 
 
     }
@@ -128,9 +134,9 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
     @Override
     public void onTableBooked(int tableNo) {
         Log.d(TAG, "onTableBooked: tableNo=" + tableNo);
-        adapter.updateTable(tableNo,false);
+        adapter.updateTable(tableNo, false);
         ++tableNo;
-        Toast.makeText(this, "Table No "+tableNo+" booked successfullly", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Table No " + tableNo + " booked successfullly", Toast.LENGTH_SHORT).show();
 
     }
 

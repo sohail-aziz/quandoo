@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.Single;
 import okhttp3.OkHttpClient;
 import reservation.quandoo.com.quandooreservation.Constants;
 import reservation.quandoo.com.quandooreservation.data.QuandooAPI;
@@ -17,6 +18,7 @@ import reservation.quandoo.com.quandooreservation.data.Repository;
 import reservation.quandoo.com.quandooreservation.data.RepositoryImpl;
 import reservation.quandoo.com.quandooreservation.data.local.CustomerDao;
 import reservation.quandoo.com.quandooreservation.data.local.QuandooDatabase;
+import reservation.quandoo.com.quandooreservation.data.local.TableDao;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -91,16 +93,23 @@ public class ApplicationModule {
         return repository;
     }
 
+
     @Provides
     @Singleton
     QuandooDatabase provideDatabase(Context context) {
         return Room.databaseBuilder(context.getApplicationContext(),QuandooDatabase.class,"app_database").build();
     }
 
-    @Provides
     @Singleton
+    @Provides
     CustomerDao provideCustomerDao(QuandooDatabase database) {
         return database.customerDao();
+    }
+
+    @Provides
+    @Singleton
+    TableDao provideTableDao(QuandooDatabase database) {
+        return database.tableDao();
     }
 
 

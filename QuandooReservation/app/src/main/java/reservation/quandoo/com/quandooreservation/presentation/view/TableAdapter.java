@@ -16,6 +16,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import reservation.quandoo.com.quandooreservation.R;
+import reservation.quandoo.com.quandooreservation.data.local.Table;
 
 /**
  * Created by sohailaziz on 16/12/17.
@@ -28,7 +29,7 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
     }
 
     private Context context;
-    private List<Boolean> tablesStates = new ArrayList<>();
+    private List<Table> tablesStates = new ArrayList<>();
     private OnTableClickListener tableClickListener;
 
 
@@ -38,15 +39,16 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
         this.tableClickListener = tableClickListener;
     }
 
-    public void updateAllTable(List<Boolean> tablesStates) {
+    public void updateAllTable(List<Table> tablesStates) {
         this.tablesStates.clear();
         this.tablesStates.addAll(tablesStates);
         notifyDataSetChanged();
     }
 
     public void updateTable(int position, Boolean isAvailable) {
-        this.tablesStates.set(position, isAvailable);
-        notifyDataSetChanged();
+       // this.tablesStates.set(position, isAvailable);
+        tablesStates.get(position).setAvailable(isAvailable);
+//        notifyDataSetChanged();
     }
 
     @Override
@@ -60,7 +62,8 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
     public void onBindViewHolder(CustomerViewHolder holder, final int position) {
 
         holder.buttonTableName.setText(String.valueOf(position+1));
-        if (tablesStates.get(position)) {
+        Table table = tablesStates.get(position);
+        if (table.isAvailable()) {
             holder.buttonTableName.setEnabled(true);
         } else {
             holder.buttonTableName.setEnabled(false);

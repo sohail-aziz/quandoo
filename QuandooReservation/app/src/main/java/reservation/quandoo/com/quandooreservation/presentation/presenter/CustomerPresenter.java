@@ -2,11 +2,8 @@ package reservation.quandoo.com.quandooreservation.presentation.presenter;
 
 import android.util.Log;
 
-import org.reactivestreams.Subscription;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -43,7 +40,7 @@ public class CustomerPresenter {
     private  CustomerView view;
     private final Repository repository;
 
-    private CompositeDisposable  compositeDisposable;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
     @Inject
@@ -58,6 +55,9 @@ public class CustomerPresenter {
 
     public void onDestroy() {
 
+        if (compositeDisposable != null ) {
+            compositeDisposable.clear();
+        }
 
     }
     public void getCustomers() {
@@ -69,10 +69,7 @@ public class CustomerPresenter {
         showProgress();
 
         Observable<List<Customer>> observable=repository.getCustomers();
-
-
-
-       observable
+        observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Customer>>() {
@@ -80,6 +77,7 @@ public class CustomerPresenter {
                     public void onSubscribe(@NonNull Disposable d) {
 
                         Log.d(TAG, "onSubscribe()");
+                       compositeDisposable.add(d);
                     }
 
                     @Override
@@ -108,8 +106,6 @@ public class CustomerPresenter {
                     @Override
                     public void onNext(List<Customer> customers) {
                         Log.d(TAG, "onNext customer size=" + customers.size());
-
-
                         view.onCustomersLoaded(customers);
 
                     }

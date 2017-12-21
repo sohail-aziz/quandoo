@@ -1,5 +1,6 @@
 package reservation.quandoo.com.quandooreservation.presentation.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,11 +42,12 @@ public class MainActivity extends AppCompatActivity implements CustomerPresenter
         ButterKnife.bind(this);
 
         injectDependencies();
-
         presenter.setView(this);
         loadCustomers();
 
     }
+
+
     private void loadCustomers() {
         Log.d(TAG, "loadCustomers");
         presenter.getCustomers();
@@ -57,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements CustomerPresenter
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         presenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -73,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements CustomerPresenter
 
     @Override
     public void onCustomersLoaded(List<Customer> customers) {
-        //TODO set adapter
 
         Log.d(TAG, "onCustomersLoaded: customers size=" + customers.size());
 
@@ -81,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements CustomerPresenter
             @Override
             public void onCustomerClicked(Customer customer) {
 
-//                Intent tableActivity = TableActivity.getCallingIntent(MainActivity.this, customer);
-//                startActivity(tableActivity);
+                Intent tableActivity = TableActivity.getCallingIntent(MainActivity.this, customer);
+                startActivity(tableActivity);
 
             }
         });
