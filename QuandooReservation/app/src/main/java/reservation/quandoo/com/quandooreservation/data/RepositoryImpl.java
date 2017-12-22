@@ -5,14 +5,17 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.reactivex.internal.operators.observable.ObservableLastMaybe;
 import io.reactivex.schedulers.Schedulers;
 import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.data.local.CustomerDao;
@@ -24,6 +27,7 @@ import reservation.quandoo.com.quandooreservation.data.local.TableDao;
  * Created by sohailaziz on 16/12/17.
  */
 
+@Singleton
 public class RepositoryImpl implements Repository {
 
     public static final String TAG = "RepositoryImpl";
@@ -31,13 +35,15 @@ public class RepositoryImpl implements Repository {
     private final QuandooAPI quandooAPI;
     private final CustomerDao customerDao;
     private final TableDao tableDao;
+    private final Executor executor;
 
 
     @Inject
-    public RepositoryImpl(QuandooAPI quandooAPI, CustomerDao customerDao, TableDao tableDao) {
+    public RepositoryImpl(QuandooAPI quandooAPI, CustomerDao customerDao, TableDao tableDao, Executor executor) {
         this.quandooAPI = quandooAPI;
         this.customerDao = customerDao;
         this.tableDao = tableDao;
+        this.executor = executor;
     }
 
 
@@ -107,16 +113,38 @@ public class RepositoryImpl implements Repository {
 
     }
 
+    @Override
+    public Observable<Table> updateTable(final Table table) {
+
+        return Observable.fromCallable(new Callable<Table>() {
+            @Override
+            public Table call() throws Exception {
+                tableDao.updateTable(table);
+                return table;
+            }
+        });
+
+
+    }
+
     private Observable<List<Table>> getTablesFromDb() {
         Log.d(TAG, "getTablesFromDb");
 
-        return tableDao.getTables().filter(new Predicate<List<Table>>() {
+        Observable<List<Table>> observable = tableDao.getTables().filter(new Predicate<List<Table>>() {
             @Override
             public boolean test(@NonNull List<Table> tables) throws Exception {
 
                 return !tables.isEmpty();
             }
-        }).toObservable();
+        }).toObservable().doOnNext(new Consumer<List<Table>>() {
+            @Override
+            public void accept(@NonNull List<Table> tables) throws Exception {
+                Log.d(TAG, "fetching table from db... tables size=" + tables.size());
+
+            }
+        });
+
+        return observable;
     }
 
     private Observable<List<Table>> getTablesFromApi() {
@@ -160,7 +188,24 @@ public class RepositoryImpl implements Repository {
 
 
     @Override
-    public void udpateTable(Table table) {
+    public void resetAllTables() {
+        Log.d(TAG, "resetAllTables");
+        Observable<List<Table>> observable = tableDao.getTables().toObservable();
+        observable
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(new Consumer<List<Table>>() {
+                    @Override
+                    public void accept(@NonNull List<Table> tables) throws Exception {
+
+                        Log.d(TAG, "accept: updating tables");
+                        for (Table t : tables) {
+                            t.setAvailable(true);
+                        }
+
+                        tableDao.updateAllTables(tables);
+                    }
+                });
 
     }
 

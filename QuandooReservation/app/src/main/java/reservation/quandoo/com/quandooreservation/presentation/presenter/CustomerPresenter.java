@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -26,6 +27,7 @@ import reservation.quandoo.com.quandooreservation.presentation.view.BaseView;
  * Created by sohailaziz on 16/12/17.
  */
 
+
 public class CustomerPresenter {
 
     public interface CustomerView extends BaseView {
@@ -40,7 +42,7 @@ public class CustomerPresenter {
     private  CustomerView view;
     private final Repository repository;
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private CompositeDisposable compositeDisposable;
 
 
     @Inject
@@ -65,13 +67,14 @@ public class CustomerPresenter {
         if (this.view == null) {
             throw new IllegalStateException("View not set");
         }
+        compositeDisposable = new CompositeDisposable();
 
         showProgress();
 
         Observable<List<Customer>> observable=repository.getCustomers();
         observable
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread(),true)
                 .subscribe(new Observer<List<Customer>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
@@ -90,7 +93,9 @@ public class CustomerPresenter {
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "onError");
+                        Log.d(TAG, "onError: e=" + e.getMessage());
                         hideProgress();
+
 
                         if (e instanceof IOException) {
                             view.onCustomersError("Internet not working");

@@ -13,7 +13,10 @@ import reservation.quandoo.com.quandooreservation.data.local.Table;
 public interface Repository {
 
     Observable<List<Customer>> getCustomers();
+
     Observable<List<Table>> getTables();
 
-    void udpateTable(Table table);
+    Observable<Table> updateTable(Table table);
+
+    void resetAllTables();
 }

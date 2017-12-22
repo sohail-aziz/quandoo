@@ -42,6 +42,7 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
     TablePresenter presenter;
 
     private TableAdapter adapter;
+    private Customer customer;
 
     public static Intent getCallingIntent(Context context, Customer customer) {
         Intent intent = new Intent(context, TableActivity.class);
@@ -52,19 +53,23 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_table);
         ButterKnife.bind(this);
         initView();
-
         injectDependencies();
+
         presenter.setView(this);
         loadTables();
+
+
     }
+
 
     private void initView() {
         Intent intent = getIntent();
         if (intent.hasExtra(KEY_CUSTOMER_EXTRA)) {
-            Customer customer = intent.getParcelableExtra(KEY_CUSTOMER_EXTRA);
+            customer = intent.getParcelableExtra(KEY_CUSTOMER_EXTRA);
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Select Table for:")
                     .append("\n")
@@ -98,11 +103,17 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+    }
 
     @Override
     protected void onDestroy() {
-        presenter.onDestroy();
         super.onDestroy();
+        Log.d(TAG, "onDestroy");
+        presenter.onDestroy();
     }
 
     @Override
@@ -111,8 +122,9 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         adapter = new TableAdapter(this, new TableAdapter.OnTableClickListener() {
             @Override
-            public void onTableClick(int tableNo) {
-                presenter.bookTable(tableNo, null);
+            public void onTableClick(Table table) {
+
+                presenter.bookTable(table, customer);
 
             }
         });
@@ -127,21 +139,28 @@ public class TableActivity extends AppCompatActivity implements TablePresenter.T
 
     @Override
     public void onTableDataError(String errorMessage) {
-
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        showToast(errorMessage);
     }
 
     @Override
-    public void onTableBooked(int tableNo) {
-        Log.d(TAG, "onTableBooked: tableNo=" + tableNo);
-        adapter.updateTable(tableNo, false);
-        ++tableNo;
-        Toast.makeText(this, "Table No " + tableNo + " booked successfullly", Toast.LENGTH_SHORT).show();
+    public void onTableBooked(Table table) {
+        Log.d(TAG, "onTableBooked: tableId=" + table.getId());
+        adapter.updateTable(table);
+        Toast.makeText(this, "Table No " + table.getId() + " booked successfully", Toast.LENGTH_SHORT).show();
+
+
+        //TODO reloading will get tables (unchanged) from API, once updateTable API is available,
+        //TODO calling loadTables will show consistent state.
+        //loadTables();
 
     }
 
     @Override
     public void onTableBookError(String errorMessage) {
 
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

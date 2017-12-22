@@ -5,6 +5,9 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -81,6 +84,11 @@ public class ApplicationModule {
                 .build();
     }
 
+    @Provides
+    @Singleton
+    Executor provideExecutor() {
+        return Executors.newFixedThreadPool(2);
+    }
     @Provides
     @Singleton
     QuandooAPI provideAPI(Retrofit retrofit) {

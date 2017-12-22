@@ -5,6 +5,7 @@ import android.util.Log;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -32,7 +33,7 @@ public class TablePresenter {
 
         void onTableDataError(String errorMessage);
 
-        void onTableBooked(int tableNo);
+        void onTableBooked(Table table);
 
         void onTableBookError(String errorMessage);
     }
@@ -40,7 +41,7 @@ public class TablePresenter {
     public static final String TAG = "TablePresenter";
     private final Repository repository;
     private TablesView view;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private CompositeDisposable compositeDisposable;
 
 
     @Inject
@@ -58,16 +59,18 @@ public class TablePresenter {
             throw new IllegalStateException("view not set");
         }
 
+        compositeDisposable = new CompositeDisposable();
+
         showProgress();
 
         Observable<List<Table>> observable = repository.getTables();
         observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread(), true)
                 .subscribe(new Observer<List<Table>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
                         Log.d(TAG, "onSubscribe");
-                       compositeDisposable.add(d);
+                        compositeDisposable.add(d);
                     }
 
                     @Override
@@ -80,6 +83,7 @@ public class TablePresenter {
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "onError");
+                        Log.d(TAG, "onError: e=" + e.getMessage());
                         hideProgress();
                         view.onTableDataError(e.getMessage());
 
@@ -94,14 +98,51 @@ public class TablePresenter {
                 });
     }
 
-    public void bookTable(int tableNo, Customer customer) {
-        //TODO book this table and notify to activity
+    public void bookTable(final Table table, Customer customer) {
 
-        view.onTableBooked(tableNo);
+        //set availability false
+        table.setAvailable(false);
+
+        Observable<Table> observable = repository.updateTable(table);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Table>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.d(TAG, "bookTable: onSubscribe");
+                        compositeDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Table table) {
+                        Log.d(TAG, "bookTable: onNext");
+
+                        view.onTableBooked(table);
+
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.d(TAG, "bookTable: onError");
+
+                        hideProgress();
+                        view.onTableBookError(e.getMessage());
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "bookTable: onComplete");
+                        hideProgress();
+
+                    }
+                });
+
 
     }
 
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
         if (compositeDisposable != null) {
             compositeDisposable.clear();
         }

@@ -22,13 +22,20 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".presentation.view.TableActivity"
-            android:label="@string/table_activity_title">
+            android:label="@string/table_activity_title" />
 
-        </activity>
+        <service
+            android:name=".maintenance.CleanupIntentService"
+            android:exported="false" />
+
+        <receiver
+            android:process=":remote"
+            android:name=".maintenance.MyAlarmReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

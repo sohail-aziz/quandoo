@@ -25,7 +25,7 @@ import reservation.quandoo.com.quandooreservation.data.local.Table;
 public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerViewHolder> {
 
     public interface OnTableClickListener{
-        void onTableClick(int tableNo);
+        void onTableClick(Table selectedTable);
     }
 
     private Context context;
@@ -45,10 +45,10 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
         notifyDataSetChanged();
     }
 
-    public void updateTable(int position, Boolean isAvailable) {
-       // this.tablesStates.set(position, isAvailable);
-        tablesStates.get(position).setAvailable(isAvailable);
-//        notifyDataSetChanged();
+    public void updateTable(Table table) {
+
+        tablesStates.get(table.getId()).setAvailable(false);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
     @Override
     public void onBindViewHolder(CustomerViewHolder holder, final int position) {
 
-        holder.buttonTableName.setText(String.valueOf(position+1));
+        holder.buttonTableName.setText(String.valueOf(position));
         Table table = tablesStates.get(position);
         if (table.isAvailable()) {
             holder.buttonTableName.setEnabled(true);
@@ -72,7 +72,7 @@ public class TableAdapter extends RecyclerView.Adapter<TableAdapter.CustomerView
         holder.buttonTableName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tableClickListener.onTableClick(position);
+                tableClickListener.onTableClick(tablesStates.get(position));
             }
         });
 
