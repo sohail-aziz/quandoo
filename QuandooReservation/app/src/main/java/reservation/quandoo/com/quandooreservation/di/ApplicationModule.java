@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Dagger module provides Application wide dependencies
- *
+ * <p>
  * Created by sohailaziz on 15/12/17.
  */
 
@@ -61,10 +61,6 @@ public class ApplicationModule {
     @Singleton
     OkHttpClient provideHttpClient() {
 
-//        HttpLoggingInterceptor.Level LOG_LEVEL = HttpLoggingInterceptor.Level.BODY;
-//        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//        loggingInterceptor.setLevel(LOG_LEVEL);
-//        return new OkHttpClient.Builder().addInterceptor(loggingInterceptor).build();
         return new OkHttpClient.Builder().build();
 
     }
@@ -73,7 +69,6 @@ public class ApplicationModule {
     @Singleton
     Retrofit provideRetrofit(OkHttpClient okHttpClient, @Named(NAME_BASE_URL) String baseUrl) {
 
-//        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new AutoParcelGsonTypeAdapterFactory()).create();
         Gson gson = new Gson();
 
         return new Retrofit.Builder()
@@ -84,11 +79,8 @@ public class ApplicationModule {
                 .build();
     }
 
-    @Provides
-    @Singleton
-    Executor provideExecutor() {
-        return Executors.newFixedThreadPool(2);
-    }
+
+
     @Provides
     @Singleton
     QuandooAPI provideAPI(Retrofit retrofit) {
@@ -105,7 +97,7 @@ public class ApplicationModule {
     @Provides
     @Singleton
     QuandooDatabase provideDatabase(Context context) {
-        return Room.databaseBuilder(context.getApplicationContext(),QuandooDatabase.class,"app_database").build();
+        return Room.databaseBuilder(context.getApplicationContext(), QuandooDatabase.class, "app_database").build();
     }
 
     @Singleton

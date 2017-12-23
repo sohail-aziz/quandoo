@@ -7,6 +7,8 @@ import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.data.local.Table;
 
 /**
+ * Main Repository interface
+ *
  * Created by sohailaziz on 16/12/17.
  */
 

@@ -2,4 +2,7 @@
     <string name="app_name">Quandoo Reservation</string>
     <string name="customer_activity_title">Customer List</string>
     <string name="table_activity_title">Book Table</string>
+    <string name="text_select_table">Select table for</string>
+    <string name="error_internet">Internet not working, please try again</string>
+
 </resources>

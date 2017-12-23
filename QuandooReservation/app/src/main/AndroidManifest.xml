@@ -3,8 +3,6 @@
     package="reservation.quandoo.com.quandooreservation">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".QuandooApplication"
@@ -16,7 +14,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".presentation.view.MainActivity"
-            android:label="@string/customer_activity_title">
+            android:label="@string/customer_activity_title"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,17 +24,19 @@
         </activity>
         <activity
             android:name=".presentation.view.TableActivity"
-            android:label="@string/table_activity_title" />
+            android:label="@string/table_activity_title"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".maintenance.CleanupIntentService"
             android:exported="false" />
 
         <receiver
-            android:process=":remote"
             android:name=".maintenance.MyAlarmReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true"
+            android:process=":remote" />
+
     </application>
 
 </manifest>

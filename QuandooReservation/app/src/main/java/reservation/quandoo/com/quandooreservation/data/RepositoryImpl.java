@@ -2,7 +2,6 @@ package reservation.quandoo.com.quandooreservation.data;
 
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -15,7 +14,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.operators.observable.ObservableLastMaybe;
 import io.reactivex.schedulers.Schedulers;
 import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.data.local.CustomerDao;
@@ -24,6 +22,8 @@ import reservation.quandoo.com.quandooreservation.data.local.TableDao;
 
 
 /**
+ * Repository Implementation provides data from different sources API and databse
+ * <p>
  * Created by sohailaziz on 16/12/17.
  */
 
@@ -35,18 +35,23 @@ public class RepositoryImpl implements Repository {
     private final QuandooAPI quandooAPI;
     private final CustomerDao customerDao;
     private final TableDao tableDao;
-    private final Executor executor;
+    private final TableMapper tableMapper;
 
 
     @Inject
-    public RepositoryImpl(QuandooAPI quandooAPI, CustomerDao customerDao, TableDao tableDao, Executor executor) {
+    public RepositoryImpl(QuandooAPI quandooAPI, CustomerDao customerDao, TableDao tableDao, TableMapper tableMapper) {
         this.quandooAPI = quandooAPI;
         this.customerDao = customerDao;
         this.tableDao = tableDao;
-        this.executor = executor;
+        this.tableMapper = tableMapper;
     }
 
 
+    /**
+     * Fetches customers list from database and API serially
+     *
+     * @return Observable {@link List<Customer>}
+     */
     @Override
     public Observable<List<Customer>> getCustomers() {
         Log.d(TAG, "getCustomers");
@@ -103,6 +108,12 @@ public class RepositoryImpl implements Repository {
     }
 
 
+    /**
+     * Fetches list of tables from database and API serially
+     * updates local database with API results
+     *
+     * @return {@link List<Table>}
+     */
     @Override
     public Observable<List<Table>> getTables() {
 
@@ -113,6 +124,12 @@ public class RepositoryImpl implements Repository {
 
     }
 
+    /**
+     * Updates table to local database
+     *
+     * @param table {@link Table}
+     * @return
+     */
     @Override
     public Observable<Table> updateTable(final Table table) {
 
@@ -152,7 +169,7 @@ public class RepositoryImpl implements Repository {
         return quandooAPI.getTables().map(new Function<List<Boolean>, List<Table>>() {
             @Override
             public List<Table> apply(@NonNull List<Boolean> input) throws Exception {
-                return mapToTable(input);
+                return tableMapper.map(input);
             }
         }).doOnNext(new Consumer<List<Table>>() {
             @Override
@@ -187,6 +204,9 @@ public class RepositoryImpl implements Repository {
     }
 
 
+    /**
+     * Resets all table's availability to true in local database asynchronously
+     */
     @Override
     public void resetAllTables() {
         Log.d(TAG, "resetAllTables");
@@ -209,13 +229,5 @@ public class RepositoryImpl implements Repository {
 
     }
 
-    private List<Table> mapToTable(List<Boolean> inputList) {
-        List<Table> tableList = new ArrayList<>(inputList.size());
-        int id = 0;
-        for (Boolean b : inputList) {
-            tableList.add(new Table(id, b));
-            ++id;
-        }
-        return tableList;
-    }
+
 }

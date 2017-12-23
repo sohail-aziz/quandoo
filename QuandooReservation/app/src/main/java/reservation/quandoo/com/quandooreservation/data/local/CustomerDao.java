@@ -11,6 +11,8 @@ import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 
 /**
+ *  DAO provides all database operations for customer
+ *
  * Created by sohailaziz on 19/12/17.
  */
 

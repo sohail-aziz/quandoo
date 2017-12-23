@@ -1,11 +1,11 @@
 package reservation.quandoo.com.quandooreservation.presentation.presenter;
 
+import android.support.v4.util.Preconditions;
 import android.util.Log;
 
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -14,6 +14,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import reservation.quandoo.com.quandooreservation.ErrorMessageFactory;
 import reservation.quandoo.com.quandooreservation.data.Repository;
 import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.data.local.Table;
@@ -22,6 +23,8 @@ import reservation.quandoo.com.quandooreservation.presentation.view.BaseView;
 
 /**
  * Table Presenter in MVP
+ * Fetches get/set data from Repository and notifies view
+ * <p>
  * Created by sohailaziz on 16/12/17.
  */
 
@@ -40,13 +43,15 @@ public class TablePresenter {
 
     public static final String TAG = "TablePresenter";
     private final Repository repository;
+    private final ErrorMessageFactory errorMessageFactory;
     private TablesView view;
-    private CompositeDisposable compositeDisposable;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
     @Inject
-    public TablePresenter(Repository repository) {
+    public TablePresenter(Repository repository, ErrorMessageFactory errorMessageFactory) {
         this.repository = repository;
+        this.errorMessageFactory = errorMessageFactory;
     }
 
     public void setView(TablesView view) {
@@ -59,7 +64,6 @@ public class TablePresenter {
             throw new IllegalStateException("view not set");
         }
 
-        compositeDisposable = new CompositeDisposable();
 
         showProgress();
 
@@ -76,7 +80,6 @@ public class TablePresenter {
                     @Override
                     public void onComplete() {
                         Log.d(TAG, "onComplete");
-                        hideProgress();
 
                     }
 
@@ -85,21 +88,30 @@ public class TablePresenter {
                         Log.d(TAG, "onError");
                         Log.d(TAG, "onError: e=" + e.getMessage());
                         hideProgress();
-                        view.onTableDataError(e.getMessage());
+                        view.onTableDataError(errorMessageFactory.getErrorMessage(e));
 
                     }
 
                     @Override
                     public void onNext(List<Table> tables) {
                         Log.d(TAG, "onNext: tables size=" + tables.size());
-
+                        hideProgress();
                         view.onTableDataLoaded(tables);
                     }
                 });
     }
 
+    /**
+     * Updates table availability
+     *
+     * @param table
+     * @param customer
+     */
     public void bookTable(final Table table, Customer customer) {
 
+        if (table == null || customer == null) {
+            throw new IllegalArgumentException("table or customer cannot be null");
+        }
         //set availability false
         table.setAvailable(false);
 
@@ -116,7 +128,6 @@ public class TablePresenter {
                     @Override
                     public void onNext(@NonNull Table table) {
                         Log.d(TAG, "bookTable: onNext");
-
                         view.onTableBooked(table);
 
                     }
@@ -126,7 +137,7 @@ public class TablePresenter {
                         Log.d(TAG, "bookTable: onError");
 
                         hideProgress();
-                        view.onTableBookError(e.getMessage());
+                        view.onTableBookError(errorMessageFactory.getErrorMessage(e));
 
                     }
 

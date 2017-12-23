@@ -6,10 +6,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
+ * Customer entity for persistence
+ *
  * Created by sohailaziz on 19/12/17.
  */
 
-@Entity (tableName = "customer")
+@Entity(tableName = "customer")
 public class Customer implements Parcelable {
 
     private String customerFirstName;

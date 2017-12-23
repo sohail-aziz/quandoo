@@ -13,13 +13,14 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
+ *  Dao provides all database operations for Table
  * Created by sohailaziz on 20/12/17.
  */
 
 @Dao
 public interface TableDao {
 
-    @Query("SELECT * FROM resturant_table")
+    @Query("SELECT * FROM restaurant_table")
     Maybe<List<Table>> getTables() ;
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

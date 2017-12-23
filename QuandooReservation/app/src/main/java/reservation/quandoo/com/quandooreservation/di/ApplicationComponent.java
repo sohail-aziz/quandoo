@@ -9,7 +9,7 @@ import reservation.quandoo.com.quandooreservation.presentation.view.TableActivit
 
 /**
  * Dagger application component defining injection points
- *
+ * <p>
  * Created by sohailaziz on 16/12/17.
  */
 

@@ -18,7 +18,7 @@ import reservation.quandoo.com.quandooreservation.data.local.Table;
 import reservation.quandoo.com.quandooreservation.data.local.TableDao;
 
 /**
- * A database cleapup intent service
+ * A database clean up intent service to be started by receiver
  */
 public class CleanupIntentService extends IntentService {
 

@@ -21,7 +21,7 @@ import reservation.quandoo.com.quandooreservation.R;
 import reservation.quandoo.com.quandooreservation.data.local.Customer;
 import reservation.quandoo.com.quandooreservation.presentation.presenter.CustomerPresenter;
 
-public class MainActivity extends AppCompatActivity implements CustomerPresenter.CustomerView{
+public class MainActivity extends BaseActivity implements CustomerPresenter.CustomerView {
 
     private static final String TAG = "MainActivity";
 
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements CustomerPresenter
     }
 
     private void injectDependencies() {
-        ((QuandooApplication)getApplication()).getComponent().inject(this);
+        ((QuandooApplication) getApplication()).getComponent().inject(this);
     }
 
     @Override
@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements CustomerPresenter
 
     @Override
     public void onCustomersError(String errorMessage) {
-        //TODO show error
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        showToast(errorMessage);
     }
 }

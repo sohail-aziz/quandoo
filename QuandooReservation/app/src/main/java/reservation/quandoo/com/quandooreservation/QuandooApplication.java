@@ -37,15 +37,14 @@ public class QuandooApplication extends Application {
                 , MyAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//        long firstTriggerTime= 15*60*60*1000 * System.currentTimeMillis();
 
 
-        long interval= 1000*60*2;//2 min
+        long interval = 1000 * 60 * 15;//15 min
 
-        long firstTriggerTime = System.currentTimeMillis()+interval;
+        long firstTriggerTime = System.currentTimeMillis() + interval;
 
 
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstTriggerTime, interval, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstTriggerTime, AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
 
     }
 

@@ -4,10 +4,12 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 /**
+ * Table entity for persistence
+ *
  * Created by sohailaziz on 20/12/17.
  */
 
-@Entity(tableName = "resturant_table")
+@Entity(tableName = "restaurant_table")
 public class Table {
 
     @PrimaryKey

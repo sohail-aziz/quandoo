@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * Broadcast receiver to receive alarm and start cleanup service
+ * Broadcast receiver to be started by AlarmManager
  */
 public class MyAlarmReceiver extends BroadcastReceiver {
 
