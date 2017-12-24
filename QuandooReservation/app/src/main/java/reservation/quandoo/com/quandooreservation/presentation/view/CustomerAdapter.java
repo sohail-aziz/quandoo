@@ -20,6 +20,8 @@ import reservation.quandoo.com.quandooreservation.R;
 import reservation.quandoo.com.quandooreservation.data.local.Customer;
 
 /**
+ * Customer adapter to display and filter customers
+ * <p>
  * Created by sohailaziz on 16/12/17.
  */
 

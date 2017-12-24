@@ -5,7 +5,6 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.AlarmManagerCompat;
 
 import reservation.quandoo.com.quandooreservation.di.ApplicationComponent;
 import reservation.quandoo.com.quandooreservation.di.ApplicationModule;
@@ -14,6 +13,8 @@ import reservation.quandoo.com.quandooreservation.maintenance.MyAlarmReceiver;
 
 
 /**
+ * Application class initializing dagger and scheduling alarm
+ * <p>
  * Created by sohailaziz on 16/12/17.
  */
 

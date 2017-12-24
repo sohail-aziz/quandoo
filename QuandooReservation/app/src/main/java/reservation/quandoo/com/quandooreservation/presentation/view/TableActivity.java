@@ -42,6 +42,7 @@ public class TableActivity extends BaseActivity implements TablePresenter.Tables
 
     private TableAdapter adapter;
     private Customer customer;
+    private boolean alreadyBooked = false;
 
     public static Intent getCallingIntent(Context context, Customer customer) {
         Intent intent = new Intent(context, TableActivity.class);
@@ -116,8 +117,11 @@ public class TableActivity extends BaseActivity implements TablePresenter.Tables
         adapter = new TableAdapter(this, new TableAdapter.OnTableClickListener() {
             @Override
             public void onTableClick(Table table) {
-
-                presenter.bookTable(table, customer);
+                if (!alreadyBooked) {
+                    presenter.bookTable(table, customer);
+                } else {
+                    showToast("Table for customer " + customer.getCustomerFirstName() + " has already been booked");
+                }
 
             }
         });
@@ -138,13 +142,12 @@ public class TableActivity extends BaseActivity implements TablePresenter.Tables
     @Override
     public void onTableBooked(Table table) {
         Log.d(TAG, "onTableBooked: tableId=" + table.getId());
+        this.alreadyBooked = true;
 
-
-        //TODO reloading will get tables (unchanged) from API, once updateTable API is available,
-        //TODO calling loadTables will show consistent state.
+        //TODO reloading will get tables (unchanged) from API, once updateTable API is available calling loadTables will show consistent state.
         //loadTables();
 
-
+        //FIXME remove this once updateTable API is available
         adapter.updateTable(table);
         showToast("Table No " + table.getId() + " booked successfully");
 

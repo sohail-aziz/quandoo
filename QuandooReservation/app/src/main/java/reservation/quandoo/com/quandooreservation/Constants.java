@@ -1,6 +1,8 @@
 package reservation.quandoo.com.quandooreservation;
 
 /**
+ * Application wide constants
+ *
  * Created by sohailaziz on 16/12/17.
  */
 
