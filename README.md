@@ -1,2 +1,0 @@
-# quandoo
-Quandoo task
